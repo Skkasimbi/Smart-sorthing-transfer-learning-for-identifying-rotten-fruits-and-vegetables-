@@ -1,0 +1,132 @@
+import tensorflow as tf
+from tensorflow.keras import layers, models
+from tensorflow.keras.applications import MobileNetV2
+
+IMG_SIZE = (224, 224)
+BATCH_SIZE = 32
+
+train_ds = tf.keras.preprocessing.image_dataset_from_directory(
+    'dataset_split/train',
+    image_size=IMG_SIZE, batch_size=BATCH_SIZE
+)
+val_ds = tf.keras.preprocessing.image_dataset_from_directory(
+    'dataset_split/val', image_size=IMG_SIZE, batch_size=BATCH_SIZE
+)
+
+base_model = MobileNetV2(input_shape=IMG_SIZE+(3,),
+                         include_top=False,
+                         weights='imagenet')
+base_model.trainable = False
+
+model = models.Sequential([
+    base_model,
+    layers.GlobalAveragePooling2D(),
+    layers.Dense(128, activation='relu'),
+    layers.Dropout(0.5),
+    layers.Dense(train_ds.num_classes, activation='softmax')
+])
+
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+history = model.fit(train_ds,
+                    validation_data=val_ds,
+                    epochs=10)
+
+import numpy as np
+import seaborn as sns
+from collections import Counter
+
+all_labels = []
+for _, labels in train_ds.unbatch():
+    all_labels.append(labels.numpy())
+
+label_counts = Counter(all_labels)
+label_names = [class_names[i] for i in label_counts.keys()]
+counts = list(label_counts.values())
+
+plt.figure(figsize=(10,6))
+sns.barplot(x=label_names, y=counts, palette="viridis")
+plt.title("Class Distribution in Training Set")
+plt.xlabel("Class Name")
+plt.ylabel("Number of Images")
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+
+base_model = MobileNetV2(input_shape=(224, 224, 3),
+                         include_top=Ffrom tensorflow.keras.applications import MobileNetV2
+from tensorflow.keras import layers, models
+
+# Load base model
+alse,
+                         weights='imagenet')
+base_model.trainable = False  # Freeze layers
+
+# Add custom classifier head
+model = models.Sequential([
+    base_model,
+    layers.GlobalAveragePooling2D(),
+    layers.Dense(128, activation='relu'),
+    layers.Dropout(0.3),
+    layers.Dense(num_classes, activation='softmax')  # softmax for multi-class
+])
+
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+model.summary()
+
+
+val_ds = tf.keras.preprocessing.image_dataset_from_directory(
+    "dataset_split/val",
+    i
+mage_size=IMG_SIZE,
+    batch_size=BATCH_SIZE,
+    label_mode='int'
+num_classes = len(class_names)
+print("Class names:", class_names))
+IMG_SIZE = (224, 224)
+BATCH_SIZE = 32
+
+train_ds = tf.keras.preprocessing.image_dataset_from_directory(
+    "dataset_split/train",
+    image_size=IMG_SIZE,
+    batch_size=BATCH_SIZE,
+    label_mode='int'
+)
+test_ds = tf.keras.preprocessing.image_dataset_from_directory(
+    "dataset_split/test",
+    image_size=IMG_SIZE,
+    batch_size=BATCH_SIZE,
+    label_mode='int'
+)
+
+class_names = train_ds.class_names
+
+def predict_single_image(img_path):
+    img = image.load_img(img_path, target_size=(224, 224))
+    img_array = image.img_to_array(img)
+    img_array = tf.expand_dims(img_array, 0)  # Add batch dimension
+
+    predictions = model.predict(img_array)
+    predicted_class = class_names[np.argmax(predictions)]
+    confidence = np.max(predictions)
+
+    # Show image with prediction
+    plt.imshow(img)
+    plt.title(f"Prediction: {predicted_class} ({confidence*100:.2f}%)")
+    plt.axis("off")
+    plt.show()
+
+    return predicted_class, confidence
+
+# Example usage
+predict_single_image("samples/rotten_banana.jpg")  # Replace with your image path
+from tensorflow.keras.models import load_model
+
+0
+
+
